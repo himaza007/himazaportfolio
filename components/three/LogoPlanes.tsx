@@ -51,14 +51,15 @@ export function LogoPlanes() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const aspectRatios = useMemo(() => {
-    return textures.map((tex) => {
-      if (tex.image && tex.image.width && tex.image.height) {
-        return tex.image.width / tex.image.height;
-      }
-      return 1.4;
-    });
-  }, [textures]);
+const aspectRatios = useMemo(() => {
+  return textures.map((tex) => {
+    const img = tex.image as HTMLImageElement;
+    if (img && img.width && img.height) {
+      return img.width / img.height;
+    }
+    return 1.4;
+  });
+}, [textures]);
 
   useFrame((state) => {
     if (!groupRef.current) return;

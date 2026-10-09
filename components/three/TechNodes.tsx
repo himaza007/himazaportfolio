@@ -55,13 +55,14 @@ export function TechNodes() {
   }, []);
 
   const aspectRatios = useMemo(() => {
-    return textures.map((tex) => {
-      if (tex.image && tex.image.width && tex.image.height) {
-        return tex.image.width / tex.image.height;
-      }
-      return 1;
-    });
-  }, [textures]);
+  return textures.map((tex) => {
+    const img = tex.image as HTMLImageElement;
+    if (img && img.width && img.height) {
+      return img.width / img.height;
+    }
+    return 1.0;
+  });
+}, [textures]);
 
   useFrame((state) => {
     if (!groupRef.current) return;

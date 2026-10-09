@@ -3,15 +3,16 @@ export interface Project {
   title: string;
   summary: string;
   description: string;
-  year?: string;
-  client?: string;
   tech: string[];
   images: string[];
+  year?: string;
+  client?: string;
+  featured?: boolean;
+  internal?: boolean;
+  confidential?: boolean; // <-- Add this line
+  award?: string;
   live?: string;
   repo?: string;
-  featured?: boolean;
-  award?: string;
-  internal?: boolean;
 }
 
 
