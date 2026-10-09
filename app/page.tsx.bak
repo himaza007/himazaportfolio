@@ -1,0 +1,47 @@
+import { SceneLoader } from '@/components/three/SceneLoader';
+import { Atmosphere } from '@/components/atmosphere/Atmosphere';
+import { PillNav } from '@/components/nav/PillNav';
+import { Hero } from '@/components/hero/Hero';
+import { About } from '@/components/about/About';
+import { Projects } from '@/components/projects/Projects';
+import { WarpScroll } from '@/components/scroll/WarpScroll';
+import { NAV_SECTIONS } from '@/lib/sections';
+
+const BUILT = new Set(['home', 'about', 'projects']);
+const LATER = NAV_SECTIONS.filter((s) => !BUILT.has(s.id));
+
+export default function Page() {
+  return (
+    <>
+      <SceneLoader />
+      <Atmosphere />
+      <PillNav />
+      <WarpScroll />
+
+      <div id="smooth-wrapper">
+        <main id="smooth-content" className="relative z-10">
+          <Hero />
+          <About />
+          <Projects />
+
+          {/* Placeholders: Volunteering, Gallery, Contact (next round) */}
+          {LATER.map((s, i) => (
+            <section
+              key={s.id}
+              id={s.id}
+              data-section={s.id}
+              className="relative flex min-h-[100svh] items-center justify-center px-6"
+            >
+              <div className="text-center">
+                <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-neutral-500">
+                  {String(i + 4).padStart(2, '0')} / {s.label}
+                </p>
+                <h2 className="mt-4 text-4xl font-black tracking-tight md:text-6xl">{s.label}</h2>
+              </div>
+            </section>
+          ))}
+        </main>
+      </div>
+    </>
+  );
+}

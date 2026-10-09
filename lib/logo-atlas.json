@@ -1,0 +1,18 @@
+{
+  "columns": 5,
+  "rows": 2,
+  "cell": 512,
+  "padding": 64,
+  "logos": [
+    { "id": "javascript", "label": "JavaScript", "devicon": "javascript/javascript-original.svg" },
+    { "id": "css3",       "label": "CSS3",       "devicon": "css3/css3-original.svg" },
+    { "id": "html5",      "label": "HTML5",      "devicon": "html5/html5-original.svg" },
+    { "id": "nodejs",     "label": "Node.js",    "devicon": "nodejs/nodejs-original.svg" },
+    { "id": "csharp",     "label": "C#",         "devicon": "csharp/csharp-original.svg" },
+    { "id": "cplusplus",  "label": "C++",        "devicon": "cplusplus/cplusplus-original.svg" },
+    { "id": "java",       "label": "Java",       "devicon": "java/java-original.svg" },
+    { "id": "python",     "label": "Python",     "devicon": "python/python-original.svg" },
+    { "id": "go",         "label": "Go",         "devicon": "go/go-original-wordmark.svg" },
+    { "id": "kotlin",     "label": "Kotlin",     "devicon": "kotlin/kotlin-original.svg" }
+  ]
+}
