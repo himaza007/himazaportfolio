@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Reveal } from '@/components/ui/Reveal';
 import { SectionHeading } from '@/components/ui/SectionHeading';
 
-// 20 public floating assets (/public/floating/1.jpg - 20.jpg)
 const GALLERY_IMAGES = Array.from({ length: 20 }, (_, i) => ({
   id: i + 1,
   src: `/floating/${i + 1}.jpg`,
@@ -67,14 +66,15 @@ export function Gallery() {
                 onClick={() => setActiveImageIndex(index)}
                 className="group relative cursor-pointer overflow-hidden rounded-2xl border border-white/10 bg-[#1E122E]/50 backdrop-blur-md transition-all duration-300 hover:border-[#99E1D9]/50 hover:shadow-[0_0_20px_rgba(153,225,217,0.2)] break-inside-avoid"
               >
+                {/* Grayscale -> Color on hover */}
                 <img
                   src={img.src}
                   alt={img.alt}
                   loading="lazy"
-                  className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105"
+                  className="w-full h-auto object-cover grayscale transition-all duration-500 group-hover:scale-105 group-hover:grayscale-0"
                 />
 
-                {/* Subtle Hover Gradient Overlay */}
+                {/* Subtle Overlay */}
                 <div className="absolute inset-0 bg-gradient-to-t from-[#0B0512]/80 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100 flex items-end p-4">
                   <span className="font-mono text-[10px] uppercase tracking-widest text-[#99E1D9]">
                     View #{String(img.id).padStart(2, '0')}
@@ -86,7 +86,7 @@ export function Gallery() {
         </div>
       </div>
 
-      {/* Touch-Friendly Fullscreen Lightbox Modal */}
+      {/* Lightbox Modal */}
       <AnimatePresence>
         {activeImageIndex !== null && (
           <motion.div
@@ -96,7 +96,6 @@ export function Gallery() {
             onClick={() => setActiveImageIndex(null)}
             className="fixed inset-0 z-[120] flex items-center justify-center bg-black/90 p-4 backdrop-blur-xl select-none"
           >
-            {/* Modal Glass Container */}
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
@@ -104,7 +103,6 @@ export function Gallery() {
               onClick={(e) => e.stopPropagation()}
               className="relative max-w-5xl max-h-[90vh] w-full flex flex-col items-center justify-center"
             >
-              {/* Close Button */}
               <button
                 type="button"
                 onClick={() => setActiveImageIndex(null)}
@@ -113,15 +111,13 @@ export function Gallery() {
                 ✕
               </button>
 
-              {/* Displayed Image */}
+              {/* Fixed: referencing GALLERY_IMAGES[activeImageIndex] */}
               <img
-                src={img.src}
-                alt={img.alt}
-                loading="lazy"
-                className="w-full h-auto object-cover grayscale transition-all duration-500 group-hover:scale-105 group-hover:grayscale-0"
+                src={GALLERY_IMAGES[activeImageIndex].src}
+                alt={GALLERY_IMAGES[activeImageIndex].alt}
+                className="max-h-[80vh] w-auto max-w-full rounded-2xl border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.8)] object-contain"
               />
 
-              {/* Navigation Controls & Counter */}
               <div className="mt-4 flex items-center justify-between w-full max-w-xs font-mono text-xs text-neutral-400">
                 <button
                   type="button"
