@@ -115,9 +115,10 @@ export function Gallery() {
 
               {/* Displayed Image */}
               <img
-                src={GALLERY_IMAGES[activeImageIndex].src}
-                alt={GALLERY_IMAGES[activeImageIndex].alt}
-                className="max-h-[80vh] w-auto max-w-full rounded-2xl border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.8)] object-contain"
+                src={img.src}
+                alt={img.alt}
+                loading="lazy"
+                className="w-full h-auto object-cover grayscale transition-all duration-500 group-hover:scale-105 group-hover:grayscale-0"
               />
 
               {/* Navigation Controls & Counter */}
