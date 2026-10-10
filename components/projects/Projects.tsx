@@ -20,9 +20,14 @@ export function Projects() {
     });
 
   return (
-    <section id="projects" data-section="projects" className="relative px-4 py-32 md:px-8 z-10">
+    <section 
+      id="projects" 
+      data-section="projects" 
+      className="relative px-4 sm:px-6 lg:px-8 py-20 sm:py-32 z-10 overflow-hidden"
+    >
       <div className="mx-auto max-w-6xl">
-        <div className="flex flex-wrap items-end justify-between gap-6">
+        {/* Header Block */}
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 sm:gap-6">
           <Reveal>
             <SectionHeading
               index="03"
@@ -36,19 +41,21 @@ export function Projects() {
             />
           </Reveal>
           <Reveal delay={0.1}>
-            <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-neutral-400">
+            <p className="font-mono text-[10px] sm:text-xs uppercase tracking-[0.25em] text-[#99E1D9]/80 shrink-0">
               {pad(projects.length)} projects
             </p>
           </Reveal>
         </div>
 
-        <div className="mt-14 grid grid-flow-dense grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
+        {/* Responsive Grid: 1 col on mobile -> 2 cols on tablet -> 3 cols on desktop */}
+        <div className="mt-10 sm:mt-14 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
           {projects.map((p, i) => (
             <ProjectCard key={p.slug} project={p} index={i} onOpen={setOpenSlug} />
           ))}
         </div>
       </div>
 
+      {/* Fullscreen Responsive Lightbox Modal */}
       <ProjectModal
         project={openIndex >= 0 ? projects[openIndex] : null}
         position={`${pad(openIndex + 1)} / ${pad(projects.length)}`}

@@ -183,7 +183,7 @@ export function Contact() {
               </span>
 
               <a
-                href="https://www.linkedin.com/in/himaza-zahara"
+                href="www.linkedin.com/in/himaza-zahara-a89b92289"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-between p-4 rounded-xl bg-white/[0.02] border border-white/10 hover:border-[#99E1D9]/50 hover:bg-[#99E1D9]/10 transition-all duration-300 group"
@@ -191,7 +191,7 @@ export function Contact() {
                 <div className="flex items-center gap-3">
                   <span className="text-[#99E1D9] font-mono font-bold text-sm">in</span>
                   <span className="text-sm font-medium text-white group-hover:text-[#99E1D9]">
-                    LinkedIn / Himaza Zahara
+                    LinkedIn
                   </span>
                 </div>
                 <span className="text-xs font-mono text-neutral-500 group-hover:text-white transition-colors">

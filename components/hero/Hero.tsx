@@ -93,7 +93,7 @@ export function Hero() {
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#99E1D9] opacity-75" />
                   <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#99E1D9] shadow-[0_0_8px_rgba(153,225,217,0.9)]" />
                 </span>
-                System: Operational
+                
               </span>
               <span aria-hidden className="text-white/15">|</span>
               <span>API: 200 OK</span>
@@ -114,7 +114,7 @@ export function Hero() {
             </motion.p>
 
             <motion.p variants={riseBlur} className="mt-2 font-mono text-xs text-neutral-400">
-              {'Bridging high-performance fullstack engineering with strategic brand growth'}
+              {'Bridging high-performance fullstack engineering with strategic brand growth.'}
             </motion.p>
 
             {/* CTAs */}

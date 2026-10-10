@@ -33,4 +33,12 @@ export function Scene() {
   );
 }
 
+/* In your Three.js Canvas Wrapper */
+<Canvas
+  dpr={[1, Math.min(2, typeof window !== 'undefined' && window.innerWidth < 768 ? 1.5 : 2)]}
+  camera={{ position: [0, 0, 8], fov: 60 }}
+>
+  {/* 3D Scene components */}
+</Canvas>
+
 export default Scene;

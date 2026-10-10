@@ -1,103 +1,149 @@
 'use client';
 
-import Image from 'next/image';
-import { motion, useScroll, useSpring } from 'framer-motion';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Reveal } from '@/components/ui/Reveal';
+import { SectionHeading } from '@/components/ui/SectionHeading';
 
-// 20 Images mapped to /floating/1.jpg through /floating/20.jpg
-const galleryImages = Array.from({ length: 20 }, (_, i) => ({
+// 20 public floating assets (/public/floating/1.jpg - 20.jpg)
+const GALLERY_IMAGES = Array.from({ length: 20 }, (_, i) => ({
   id: i + 1,
   src: `/floating/${i + 1}.jpg`,
-  aspect: i % 3 === 0 ? 'aspect-[3/4]' : i % 2 === 0 ? 'aspect-square' : 'aspect-[4/3]',
+  alt: `Visual Archive ${i + 1}`,
 }));
 
 export function Gallery() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [activeImage, setActiveImage] = useState<string | null>(null);
+  const [activeImageIndex, setActiveImageIndex] = useState<number | null>(null);
 
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ['start end', 'end start'],
-  });
+  const handlePrev = () => {
+    if (activeImageIndex === null) return;
+    setActiveImageIndex((prev) =>
+      prev === 0 ? GALLERY_IMAGES.length - 1 : (prev as number) - 1
+    );
+  };
 
-  const pathLength = useSpring(scrollYProgress, { stiffness: 100, damping: 30 });
+  const handleNext = () => {
+    if (activeImageIndex === null) return;
+    setActiveImageIndex((prev) =>
+      prev === GALLERY_IMAGES.length - 1 ? 0 : (prev as number) + 1
+    );
+  };
 
   return (
-    <section ref={containerRef} id="gallery" className="relative min-h-screen py-24 px-6 md:px-12 max-w-7xl mx-auto z-10 overflow-hidden">
-      
-      {/* TURQUOISE TRACER SVG PATH */}
-      <div className="absolute inset-0 pointer-events-none z-0">
-        <svg className="w-full h-full opacity-30" viewBox="0 0 1000 2000" fill="none">
-          <motion.path
-            d="M 100 0 Q 900 400 200 800 T 800 1600 T 100 2000"
-            stroke="url(#turquoiseGradient)"
-            strokeWidth="3"
-            style={{ pathLength }}
-          />
-          <defs>
-            <linearGradient id="turquoiseGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#99E1D9" stopOpacity="0" />
-              <stop offset="50%" stopColor="#99E1D9" stopOpacity="1" />
-              <stop offset="100%" stopColor="#1E122E" stopOpacity="0" />
-            </linearGradient>
-          </defs>
-        </svg>
-      </div>
-
-      {/* HEADING */}
-      <div className="relative z-10 flex items-center gap-2 mb-4">
-        <span className="w-2 h-2 rounded-full bg-[#99E1D9] animate-pulse" />
-        <span className="text-xs font-mono text-[#99E1D9] uppercase tracking-widest">
-          04 / GALLERY
-        </span>
-      </div>
-
-      <div className="relative z-10 flex flex-col md:flex-row md:items-end justify-between mb-16 gap-4">
-        <div>
-          <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight">Visual Archives</h2>
-          <p className="text-sm md:text-base text-neutral-400 mt-2 font-mono">// Memories & milestones.</p>
-        </div>
-      </div>
-
-      {/* MASONRY GRID */}
-      <div className="relative z-10 columns-1 sm:columns-2 lg:columns-3 gap-6 space-y-6">
-        {galleryImages.map((img) => (
-          <motion.div
-            key={img.id}
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-50px' }}
-            transition={{ duration: 0.6 }}
-            onClick={() => setActiveImage(img.src)}
-            className={`relative ${img.aspect} rounded-2xl overflow-hidden border border-white/10 bg-[#1E122E]/60 backdrop-blur-xl group cursor-pointer hover:border-[#99E1D9]/60 hover:shadow-[0_0_30px_rgba(153,225,217,0.2)] transition-all duration-500`}
-          >
-            <Image
-              src={img.src}
-              alt={`Gallery image ${img.id}`}
-              fill
-              className="object-cover grayscale group-hover:grayscale-0 transition-all duration-700 ease-out scale-105 group-hover:scale-100"
+    <section
+      id="gallery"
+      data-section="gallery"
+      className="relative px-4 sm:px-6 lg:px-8 py-20 sm:py-32 z-10 overflow-hidden bg-[#0B0512]"
+    >
+      <div className="mx-auto max-w-7xl">
+        {/* Header Block */}
+        <div className="mb-10 sm:mb-16 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+          <Reveal>
+            <SectionHeading
+              index="05"
+              label="Visual Archives"
+              title={
+                <>
+                  Behind the scenes, <span className="text-[#99E1D9]">captured.</span>
+                </>
+              }
+              kicker="A continuous visual stream of design explorations, creative direction, and moments."
             />
-            
-            <div className="absolute inset-0 bg-gradient-to-t from-[#0B0512]/80 via-transparent to-transparent opacity-60 group-hover:opacity-30 transition-opacity duration-500" />
+          </Reveal>
+          <Reveal delay={0.1}>
+            <p className="font-mono text-[10px] sm:text-xs uppercase tracking-[0.25em] text-neutral-400 shrink-0">
+              {GALLERY_IMAGES.length} Archives
+            </p>
+          </Reveal>
+        </div>
 
-            <div className="absolute bottom-4 left-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center gap-2 px-3 py-1 rounded-full bg-black/70 backdrop-blur-md border border-white/10">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#99E1D9] animate-pulse" />
-              <span className="text-[10px] font-mono text-neutral-200 tracking-wider">
-                FRAME #{String(img.id).padStart(2, '0')}
-              </span>
-            </div>
-          </motion.div>
-        ))}
+        {/* Responsive CSS Masonry Grid */}
+        <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-4 space-y-4">
+          {GALLERY_IMAGES.map((img, index) => (
+            <Reveal key={img.id} delay={(index % 4) * 0.05}>
+              <motion.div
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setActiveImageIndex(index)}
+                className="group relative cursor-pointer overflow-hidden rounded-2xl border border-white/10 bg-[#1E122E]/50 backdrop-blur-md transition-all duration-300 hover:border-[#99E1D9]/50 hover:shadow-[0_0_20px_rgba(153,225,217,0.2)] break-inside-avoid"
+              >
+                <img
+                  src={img.src}
+                  alt={img.alt}
+                  loading="lazy"
+                  className="w-full h-auto object-cover transition-transform duration-500 group-hover:scale-105"
+                />
+
+                {/* Subtle Hover Gradient Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0B0512]/80 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100 flex items-end p-4">
+                  <span className="font-mono text-[10px] uppercase tracking-widest text-[#99E1D9]">
+                    View #{String(img.id).padStart(2, '0')}
+                  </span>
+                </div>
+              </motion.div>
+            </Reveal>
+          ))}
+        </div>
       </div>
 
-      {/* LIGHTBOX */}
-      {activeImage && (
-        <div onClick={() => setActiveImage(null)} className="fixed inset-0 z-50 bg-black/90 backdrop-blur-xl flex items-center justify-center p-4 cursor-zoom-out">
-          <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="relative max-w-5xl max-h-[85vh] w-full h-full rounded-2xl overflow-hidden border border-white/20">
-            <Image src={activeImage} alt="Expanded gallery view" fill className="object-contain" />
+      {/* Touch-Friendly Fullscreen Lightbox Modal */}
+      <AnimatePresence>
+        {activeImageIndex !== null && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setActiveImageIndex(null)}
+            className="fixed inset-0 z-[120] flex items-center justify-center bg-black/90 p-4 backdrop-blur-xl select-none"
+          >
+            {/* Modal Glass Container */}
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="relative max-w-5xl max-h-[90vh] w-full flex flex-col items-center justify-center"
+            >
+              {/* Close Button */}
+              <button
+                type="button"
+                onClick={() => setActiveImageIndex(null)}
+                className="absolute -top-12 right-0 sm:top-4 sm:right-4 z-20 flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-md transition-colors hover:bg-[#99E1D9] hover:text-[#0B0512]"
+              >
+                ✕
+              </button>
+
+              {/* Displayed Image */}
+              <img
+                src={GALLERY_IMAGES[activeImageIndex].src}
+                alt={GALLERY_IMAGES[activeImageIndex].alt}
+                className="max-h-[80vh] w-auto max-w-full rounded-2xl border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.8)] object-contain"
+              />
+
+              {/* Navigation Controls & Counter */}
+              <div className="mt-4 flex items-center justify-between w-full max-w-xs font-mono text-xs text-neutral-400">
+                <button
+                  type="button"
+                  onClick={handlePrev}
+                  className="px-3 py-1.5 rounded-full bg-white/5 border border-white/10 hover:border-[#99E1D9] hover:text-white transition-colors"
+                >
+                  ← Prev
+                </button>
+                <span>
+                  {String(activeImageIndex + 1).padStart(2, '0')} / {String(GALLERY_IMAGES.length).padStart(2, '0')}
+                </span>
+                <button
+                  type="button"
+                  onClick={handleNext}
+                  className="px-3 py-1.5 rounded-full bg-white/5 border border-white/10 hover:border-[#99E1D9] hover:text-white transition-colors"
+                >
+                  Next →
+                </button>
+              </div>
+            </motion.div>
           </motion.div>
-        </div>
-      )}
+        )}
+      </AnimatePresence>
     </section>
   );
 }
