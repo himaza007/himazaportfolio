@@ -1,192 +1,253 @@
 'use client';
 
-import { motion, type Variants } from 'framer-motion';
-import type { MouseEvent, PointerEvent } from 'react';
-import { scrollToSection } from '@/lib/scroll';
+import { useState, useRef, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
-const EASE = [0.22, 1, 0.36, 1] as const;
+type TabType = 'overview' | 'stack' | 'cli';
 
-const card: Variants = {
-  hidden: { opacity: 0, y: 32, scale: 0.97 },
-  show: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: { duration: 1.1, ease: EASE, staggerChildren: 0.08, delayChildren: 0.3 },
-  },
-};
-
-const riseBlur: Variants = {
-  hidden: { opacity: 0, y: 18, filter: 'blur(8px)' },
-  show: { opacity: 1, y: 0, filter: 'blur(0px)', transition: { duration: 0.9, ease: EASE } },
-};
-
-const rise: Variants = {
-  hidden: { opacity: 0, y: 18 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.9, ease: EASE } },
-};
-
-const maskUp: Variants = {
-  hidden: { y: '110%' },
-  show: { y: '0%', transition: { duration: 1, ease: EASE } },
-};
-
-const METRICS = [
-  { value: '4+', label: 'Fullstack' },
-  { value: '3+', label: 'Creator' },
-  { value: '5+', label: 'Volunteer' },
-];
+interface CommandLog {
+  command: string;
+  response: string;
+}
 
 export function Hero() {
-  const onPointerMove = (e: PointerEvent<HTMLDivElement>) => {
-    const r = e.currentTarget.getBoundingClientRect();
-    e.currentTarget.style.setProperty('--mx', `${e.clientX - r.left}px`);
-    e.currentTarget.style.setProperty('--my', `${e.clientY - r.top}px`);
+  const [activeTab, setActiveTab] = useState<TabType>('overview');
+  const [inputVal, setInputVal] = useState('');
+  const [logs, setLogs] = useState<CommandLog[]>([
+    { command: 'system.init()', response: 'Environment initialized. Ready for commands.' },
+  ]);
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  // CLI Command Interpreter
+  const handleCommandSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const cmd = inputVal.trim().toLowerCase();
+    if (!cmd) return;
+
+    let res = '';
+    if (cmd === 'clear') {
+      setLogs([]);
+      setInputVal('');
+      return;
+    } else if (cmd === 'help') {
+      res = 'Available commands: whoami, stack, contact, projects, status, clear';
+    } else if (cmd === 'whoami') {
+      res = 'Himaza Zahara - Fullstack Developer & Brand Strategist.';
+    } else if (cmd === 'stack') {
+      res = 'Next.js 16, React 19, Three.js, TypeScript, Tailwind CSS, PostgreSQL.';
+    } else if (cmd === 'contact') {
+      res = 'Direct Channel: hello@himazazahara.dev | GitHub: @himazazahara';
+    } else if (cmd === 'projects') {
+      res = 'Navigating to #projects section...';
+      if (typeof window !== 'undefined') window.location.hash = '#projects';
+    } else if (cmd === 'status') {
+      res = 'System status: 100% Operational. WebGL Atmosphere: Active.';
+    } else {
+      res = `Command not recognized: '${cmd}'. Type 'help' for available commands.`;
+    }
+
+    setLogs((prev) => [...prev, { command: inputVal, response: res }]);
+    setInputVal('');
   };
 
-  const go = (id: string) => (e: MouseEvent) => {
-    e.preventDefault();
-    scrollToSection(id);
-  };
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [logs]);
 
   return (
-    <section
-      id="home"
-      data-section="home"
-      className="relative flex min-h-[100svh] items-center justify-center px-4 pb-16 pt-28"
-    >
-      {/* GSAP target (plain div). Framer animates the child only. */}
-      <div data-hero-hud className="w-full max-w-xl will-change-transform md:max-w-2xl">
-        <motion.div
-          variants={card}
-          initial="hidden"
-          animate="show"
-          onPointerMove={onPointerMove}
-          className="group relative overflow-hidden rounded-2xl border border-white/10 bg-[#1E122E]/70 shadow-[0_0_50px_rgba(153,225,217,0.12)] backdrop-blur-2xl transition-[border-color,box-shadow] duration-700 hover:border-[#99E1D9]/40 hover:shadow-[0_0_60px_rgba(153,225,217,0.25)]"
-        >
-          {/* Cursor-tracked turquoise edge reflection */}
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-0 rounded-2xl opacity-0 transition-opacity duration-700 group-hover:opacity-100"
-            style={{
-              padding: 1,
-              background:
-                'radial-gradient(320px circle at var(--mx, 50%) var(--my, 50%), rgba(153,225,217,0.55), transparent 45%)',
-              WebkitMask: 'linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)',
-              WebkitMaskComposite: 'xor',
-              maskComposite: 'exclude',
-            }}
-          />
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-white/25 to-transparent"
-          />
+    <section id="hero" className="relative z-10 px-4 pt-20 pb-8 max-w-3xl mx-auto flex flex-col items-center justify-center min-h-screen">
+      {/* Ambient Glass Glow Atmosphere */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full max-w-xl bg-gradient-to-r from-[#99E1D9]/15 via-transparent to-[#3A1C5C]/30 rounded-full blur-[100px] pointer-events-none -z-10" />
 
-          <div className="relative p-6 sm:p-8 md:p-10">
-            {/* Status row */}
-            <motion.div
-              variants={rise}
-              className="flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[10px] uppercase tracking-[0.18em] text-neutral-400"
-            >
-              <span className="flex items-center gap-2">
-                <span className="relative flex h-1.5 w-1.5">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#99E1D9] opacity-75" />
-                  <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#99E1D9] shadow-[0_0_8px_rgba(153,225,217,0.9)]" />
-                </span>
-                
-              </span>
-              <span aria-hidden className="text-white/15">|</span>
-              <span>API: 200 OK</span>
-            </motion.div>
-
-            <h1 className="mt-6 text-4xl font-black leading-[0.95] tracking-tight text-white md:text-5xl">
-              {['Himaza', 'Zahara'].map((word) => (
-                <span key={word} className="inline-block overflow-hidden pb-[0.08em] pr-[0.22em] align-bottom">
-                  <motion.span variants={maskUp} className="inline-block">
-                    {word}
-                  </motion.span>
-                </span>
-              ))}
-            </h1>
-
-            <motion.p variants={riseBlur} className="mt-3 text-base text-neutral-300">
-              Fullstack Developer <span className="text-[#99E1D9]">&amp;</span> Brand Strategist
-            </motion.p>
-
-            <motion.p variants={riseBlur} className="mt-2 font-mono text-xs text-neutral-400">
-              {'Bridging high-performance fullstack engineering with strategic brand growth.'}
-            </motion.p>
-
-            {/* CTAs */}
-            <motion.div variants={rise} className="mt-7 flex flex-wrap items-center gap-3">
-              <motion.a
-                href="#projects"
-                onClick={go('projects')}
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-                className="group/cta relative inline-flex"
-              >
-                <span
-                  aria-hidden
-                  className="absolute -inset-1.5 rounded-full bg-[#99E1D9]/50 opacity-0 blur-xl transition-opacity duration-500 group-hover/cta:opacity-100"
-                />
-                <span className="relative inline-flex items-center gap-2 rounded-full bg-[#99E1D9] px-6 py-3 text-sm font-black text-[#0B0512]">
-                  View Work
-                  <span className="transition-transform duration-300 group-hover/cta:-translate-y-0.5 group-hover/cta:translate-x-0.5">
-                    ↗
-                  </span>
-                </span>
-              </motion.a>
-
-              <motion.a
-                href="#contact"
-                onClick={go('contact')}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.97 }}
-                transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-                className="inline-flex items-center rounded-full border border-white/15 bg-white/[0.04] px-6 py-3 text-sm font-medium text-white outline-none backdrop-blur-xl transition-colors duration-300 hover:border-[#99E1D9]/50 hover:bg-white/[0.07] focus-visible:ring-2 focus-visible:ring-[#99E1D9]"
-              >
-                Get In Touch
-              </motion.a>
-            </motion.div>
+      {/* Sleek Glass Console Container */}
+      <div className="w-full relative rounded-2xl bg-gradient-to-b from-white/[0.08] via-[#0B0512]/50 to-[#0B0512]/75 backdrop-blur-2xl border border-white/15 shadow-[inset_0_1px_1px_rgba(255,255,255,0.25),0_20px_50px_rgba(0,0,0,0.6),0_0_30px_rgba(153,225,217,0.08)] overflow-hidden transition-all duration-300 hover:border-[#99E1D9]/30">
+        
+        {/* Glass Header Window Bar */}
+        <div className="flex items-center justify-between px-4 py-2.5 bg-white/[0.04] backdrop-blur-md border-b border-white/10 font-mono text-xs text-gray-400">
+          <div className="flex items-center space-x-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-[#FF5F56]/90 shadow-[0_0_6px_rgba(255,95,86,0.5)] inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-[#FFBD2E]/90 shadow-[0_0_6px_rgba(255,189,46,0.5)] inline-block" />
+            <span className="w-2.5 h-2.5 rounded-full bg-[#27C93F]/90 shadow-[0_0_6px_rgba(39,201,63,0.5)] inline-block" />
+            <span className="ml-2.5 text-gray-300 font-medium tracking-wider text-[11px]">/DEV/TTY01 ~ HIMAZA-SHELL</span>
           </div>
+          <div className="flex items-center space-x-1.5 text-[#99E1D9]">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#99E1D9] shadow-[0_0_6px_#99E1D9] animate-pulse" />
+            <span className="tracking-widest text-[9px] uppercase font-semibold">SYS.ONLINE</span>
+          </div>
+        </div>
 
-          {/* Metrics footer */}
-          <motion.ul
-            variants={rise}
-            className="relative grid grid-cols-3 divide-x divide-white/10 border-t border-white/10 bg-white/[0.02]"
+        {/* Interactive Tab Navigation Bar */}
+        <div className="flex items-center space-x-1 px-4 py-1.5 border-b border-white/10 bg-black/20 font-mono text-[11px] overflow-x-auto">
+          <button
+            onClick={() => setActiveTab('overview')}
+            className={`px-2.5 py-1 rounded-md transition-all ${
+              activeTab === 'overview'
+                ? 'bg-[#99E1D9]/15 text-[#99E1D9] border border-[#99E1D9]/30 font-bold'
+                : 'text-gray-400 hover:text-white hover:bg-white/5'
+            }`}
           >
-            {METRICS.map((m) => (
-              <li
-                key={m.label}
-                className="flex flex-col items-start gap-1 px-4 py-4 sm:flex-row sm:items-baseline sm:gap-2 sm:px-6"
-              >
-                <span className="text-xl font-black tracking-tight text-white md:text-2xl">{m.value}</span>
-                <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-neutral-400">
-                  Yrs <span className="text-[#99E1D9]">•</span> {m.label}
-                </span>
-              </li>
-            ))}
-          </motion.ul>
-        </motion.div>
-      </div>
+            01. OVERVIEW
+          </button>
+          <button
+            onClick={() => setActiveTab('stack')}
+            className={`px-2.5 py-1 rounded-md transition-all ${
+              activeTab === 'stack'
+                ? 'bg-[#99E1D9]/15 text-[#99E1D9] border border-[#99E1D9]/30 font-bold'
+                : 'text-gray-400 hover:text-white hover:bg-white/5'
+            }`}
+          >
+            02. TECH_STACK
+          </button>
+          <button
+            onClick={() => setActiveTab('cli')}
+            className={`px-2.5 py-1 rounded-md transition-all ${
+              activeTab === 'cli'
+                ? 'bg-[#99E1D9]/15 text-[#99E1D9] border border-[#99E1D9]/30 font-bold'
+                : 'text-gray-400 hover:text-white hover:bg-white/5'
+            }`}
+          >
+            03. CLI_CONSOLE
+          </button>
+        </div>
 
-      {/* Scroll cue */}
-      <div data-hero-cue className="absolute bottom-6 left-1/2 hidden -translate-x-1/2 md:block">
-        <motion.button
-          type="button"
-          onClick={() => scrollToSection('about')}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.8, duration: 1 }}
-          className="flex flex-col items-center gap-3 font-mono text-[10px] uppercase tracking-[0.3em] text-neutral-400 transition-colors hover:text-white"
-        >
-          Scroll to dive
-          <span className="relative h-10 w-px overflow-hidden bg-white/10">
-            <span className="absolute inset-x-0 top-0 h-1/2 animate-[scrollcue_2s_ease-in-out_infinite] bg-gradient-to-b from-transparent to-[#99E1D9]" />
-          </span>
-        </motion.button>
+        {/* Console Body Content Area */}
+        <div className="p-6 sm:p-8 space-y-6">
+          <AnimatePresence mode="wait">
+            {activeTab === 'overview' && (
+              <motion.div
+                key="overview"
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.15 }}
+                className="space-y-5"
+              >
+                {/* Command Prompt */}
+                <div className="font-mono text-xs text-[#99E1D9] tracking-wider flex items-center space-x-2">
+                  <span>$ WHOAMI --VERBOSE | API_ID: 007</span>
+                </div>
+
+                {/* Main Hero Header */}
+                <div className="space-y-2.5">
+                  <h1 className="font-serif italic text-3xl sm:text-5xl text-white font-normal tracking-tight drop-shadow-[0_2px_10px_rgba(255,255,255,0.15)]">
+                    Himaza Zahara
+                  </h1>
+                  <p className="font-mono text-base sm:text-lg text-white font-medium">
+                    Fullstack Developer <span className="text-[#99E1D9]">&amp;</span> Brand Strategist
+                  </p>
+                  <p className="font-mono text-xs sm:text-sm text-gray-300 max-w-xl leading-relaxed">
+                    Bridging high-performance fullstack engineering with strategic brand growth.
+                  </p>
+                </div>
+
+                {/* Command Action Buttons */}
+                <div className="flex flex-wrap items-center gap-3 pt-1">
+                  <a
+                    href="#projects"
+                    className="px-5 py-2.5 rounded-full bg-[#99E1D9] text-[#0B0512] font-mono text-xs font-bold hover:bg-white hover:shadow-[0_0_15px_rgba(153,225,217,0.4)] transition-all flex items-center space-x-2"
+                  >
+                    <span>&gt; ./view_work.sh</span>
+                    <span>&rarr;</span>
+                  </a>
+                  <a
+                    href="#contact"
+                    className="px-5 py-2.5 rounded-full bg-white/[0.06] hover:bg-white/[0.12] text-white border border-white/20 font-mono text-xs font-medium transition-all backdrop-blur-md"
+                  >
+                    &gt; ./contact.cmd
+                  </a>
+                </div>
+              </motion.div>
+            )}
+
+            {activeTab === 'stack' && (
+              <motion.div
+                key="stack"
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.15 }}
+                className="space-y-4 font-mono"
+              >
+                <div className="text-xs text-[#99E1D9]">$ cat capabilities.json</div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-gray-300">
+                  <div className="p-3 rounded-lg bg-white/5 border border-white/10 space-y-1">
+                    <span className="text-[#99E1D9] font-bold block">[CORE_FRONTEND]</span>
+                    <p className="text-[11px] leading-relaxed">Next.js 16 (Turbopack), React 19, TypeScript, Tailwind CSS, Framer Motion</p>
+                  </div>
+                  <div className="p-3 rounded-lg bg-white/5 border border-white/10 space-y-1">
+                    <span className="text-[#99E1D9] font-bold block">[WEBGL_ATMOSPHERE]</span>
+                    <p className="text-[11px] leading-relaxed">Three.js, React-Three-Fiber (R3F), Drei, Custom Shaders, Particle Systems</p>
+                  </div>
+                  <div className="p-3 rounded-lg bg-white/5 border border-white/10 space-y-1">
+                    <span className="text-[#99E1D9] font-bold block">[BACKEND_DATA]</span>
+                    <p className="text-[11px] leading-relaxed">Node.js, PostgreSQL, Prisma, GraphQL, REST Telemetry, Edge API Routes</p>
+                  </div>
+                  <div className="p-3 rounded-lg bg-white/5 border border-white/10 space-y-1">
+                    <span className="text-[#99E1D9] font-bold block">[BRAND_STRATEGY]</span>
+                    <p className="text-[11px] leading-relaxed">Visual Architecture, CLI UI/UX, Design Systems, Strategic Positioning</p>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
+            {activeTab === 'cli' && (
+              <motion.div
+                key="cli"
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.15 }}
+                className="space-y-3 font-mono text-xs"
+              >
+                <div className="max-h-40 overflow-y-auto space-y-2 pr-2 scrollbar-thin scrollbar-thumb-white/20">
+                  <div className="text-gray-400 text-[11px]">
+                    Type <span className="text-[#99E1D9]">help</span> for interactive CLI commands.
+                  </div>
+                  {logs.map((log, index) => (
+                    <div key={index} className="space-y-0.5 text-[11px]">
+                      <div className="text-[#99E1D9] flex items-center space-x-1.5">
+                        <span>usr@tty01:~$</span>
+                        <span>{log.command}</span>
+                      </div>
+                      <div className="text-gray-300 pl-3">{log.response}</div>
+                    </div>
+                  ))}
+                  <div ref={bottomRef} />
+                </div>
+
+                <form onSubmit={handleCommandSubmit} className="pt-3 border-t border-white/10 flex items-center space-x-2">
+                  <span className="text-[#99E1D9] font-bold">&gt;</span>
+                  <input
+                    type="text"
+                    value={inputVal}
+                    onChange={(e) => setInputVal(e.target.value)}
+                    placeholder="Type a command ('help', 'whoami', 'clear')..."
+                    className="w-full bg-transparent text-white font-mono text-xs focus:outline-none placeholder:text-gray-500"
+                  />
+                  <button type="submit" className="px-3 py-1 bg-[#99E1D9] text-[#0B0512] font-bold rounded-md text-[10px] hover:bg-white transition-colors">
+                    EXEC
+                  </button>
+                </form>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Compact Stats Footer Bar */}
+          <div className="pt-5 border-t border-white/10 grid grid-cols-1 sm:grid-cols-3 gap-4 font-mono">
+            <div className="flex items-baseline space-x-2">
+              <span className="text-xl sm:text-2xl font-bold text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]">4+</span>
+              <span className="text-[10px] sm:text-xs text-gray-400 tracking-wider uppercase">YRS · FULLSTACK</span>
+            </div>
+            <div className="flex items-baseline space-x-2">
+              <span className="text-xl sm:text-2xl font-bold text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]">3+</span>
+              <span className="text-[10px] sm:text-xs text-gray-400 tracking-wider uppercase">YRS · BRAND STRATEGY</span>
+            </div>
+            <div className="flex items-baseline space-x-2">
+              <span className="text-xl sm:text-2xl font-bold text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]">5+</span>
+              <span className="text-[10px] sm:text-xs text-gray-400 tracking-wider uppercase">YRS · OPEN SOURCE</span>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );

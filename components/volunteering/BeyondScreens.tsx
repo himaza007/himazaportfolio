@@ -43,7 +43,7 @@ export function BeyondScreens() {
       </div>
 
       <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight mb-2 max-w-4xl">
-        Apart from qualifications on paper —
+        Apart from qualifications on paper.
       </h2>
       <p className="text-lg md:text-xl text-neutral-400 font-light mb-12 max-w-2xl">
         Beyond the screens and academics.

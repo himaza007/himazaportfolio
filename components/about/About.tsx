@@ -42,6 +42,7 @@ export function About() {
   });
 
   return (
+    
     <section id="about" className="relative min-h-screen pt-8 pb-20 px-6 md:px-12 max-w-7xl mx-auto z-10">
       
       {/* SECTION HEADING */}
