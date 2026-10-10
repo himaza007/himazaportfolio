@@ -154,8 +154,8 @@ function FloatingPlanes() {
           key={i}
           geometry={planeGeo}
           material={materials[i]}
-          position={planesData[i].position}
-          rotation={planesData[i].rotation}
+          position={planesData[i].position as [number, number, number]}
+          rotation={planesData[i].rotation as [number, number, number]}
           scale={planesData[i].scale}
         />
       ))}
